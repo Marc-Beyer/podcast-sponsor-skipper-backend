@@ -1,0 +1,50 @@
+{
+    "name": "podcast-sponsor-skipper-backend",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+        "dev": "tsc -w",
+        "build-ts": "npx tsc",
+        "build": "npm run build-ts",
+        "start": "node ./dist/js/app.js",
+        "start-preprocess": "node ./dist/js/app.js -preprocess ./files",
+        "start-queries": "node ./dist/js/app.js -queries ./queries/IR1_Queries.txt",
+        "clean-start": "npm run build-ts && npm run start",
+        "clean-start-preprocess": "npm run build-ts && npm run start-preprocess",
+        "clean-start-queries": "npm run build-ts && npm run start-queries",
+        "test": "tsc --noEmit && node --loader tsx ./test/runTests.ts",
+        "lint": "eslint . --ext .ts",
+        "lint-fix": "eslint . --fix --ext .ts"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Marc-Beyer/podcast-sponsor-skipper-backend.git"
+    },
+    "author": "Marc Beyer",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Marc-Beyer/podcast-sponsor-skipper-backend/issues"
+    },
+    "homepage": "https://github.com/Marc-Beyer/podcast-sponsor-skipper-backend#readme",
+    "type": "module",
+    "devDependencies": {
+        "@eslint/js": "^9.5.0",
+        "@types/cors": "^2.8.17",
+        "@types/dotenv": "^8.2.0",
+        "@types/eslint__js": "^8.42.3",
+        "@types/express": "^4.17.21",
+        "@types/node": "^20.14.6",
+        "eslint": "^8.57.0",
+        "nodemon": "^3.1.4",
+        "ts-node": "^10.9.2",
+        "tsx": "^4.15.6",
+        "typescript": "^5.4.5",
+        "typescript-eslint": "^7.13.1"
+    },
+    "dependencies": {
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "express": "^4.19.2"
+    }
+}
