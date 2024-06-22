@@ -18,5 +18,6 @@ export default tseslint.config(
                 myCustomGlobal: "readonly",
             },
         },
+        ignores: ["dist/", "public/"],
     }
 );
