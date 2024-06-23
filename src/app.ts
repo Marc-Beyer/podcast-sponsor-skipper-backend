@@ -8,6 +8,7 @@ import { toNumberOrDefault } from "./helper.js";
 import { createDatabase } from "./db/createDatabase.js";
 import { POSTGRES_DB, POSTGRES_HOST, POSTGRES_PASSWORD, POSTGRES_PORT, POSTGRES_USER, initializeDataSource } from "./db/data-source.js";
 import router from "./routes.js";
+import { getNrOfPodcasts } from "./controller/podcast.controller.js";
 
 // Get environment variables
 const PORT: number = toNumberOrDefault(process.env.PORT, 80);
@@ -83,6 +84,8 @@ await createDatabase(POSTGRES_DB, {
     password: POSTGRES_PASSWORD,
 });
 await initializeDataSource();
+
+getNrOfPodcasts();
 
 // Start the webserver
 app.listen(PORT, (): void => {

@@ -1,3 +1,5 @@
+import { NR_OF_RESULTS_PER_PAGE } from "../../constants.js";
+import { requestPodcast } from "../../podcastRequestManager.js";
 import { AppDataSource, initializeDataSource } from "../data-source.js";
 import { Category } from "../entities/category.entity.js";
 import { Podcast } from "../entities/podcast.entity.js";
@@ -25,10 +27,10 @@ export class PodcastService {
         try {
             await podcastRepository.save(podcast);
             console.log("Podcast saved successfully");
+
+            return podcast;
         } catch (error) {
             console.error("Error saving podcast:", error);
-        } finally {
-            await AppDataSource.destroy();
         }
     }
 
@@ -42,16 +44,17 @@ export class PodcastService {
                 where: { url },
                 relations: ["categories"],
             });
-            return podcast;
+            if (podcast) return podcast;
+
+            const newPodcast = await requestPodcast(url);
+            return newPodcast ?? null;
         } catch (error) {
             console.error("Error retrieving podcast:", error);
             return null;
-        } finally {
-            await AppDataSource.destroy();
         }
     }
 
-    async getAllPodcasts(): Promise<Podcast[]> {
+    async getAllPodcasts(page: number): Promise<Podcast[]> {
         await initializeDataSource();
 
         const podcastRepository = AppDataSource.getRepository(Podcast);
@@ -59,30 +62,35 @@ export class PodcastService {
         try {
             const podcasts = await podcastRepository.find({
                 relations: ["categories"],
+                take: NR_OF_RESULTS_PER_PAGE,
+                skip: page * NR_OF_RESULTS_PER_PAGE,
             });
             return podcasts;
         } catch (error) {
             console.error("Error retrieving podcasts:", error);
             return [];
-        } finally {
-            await AppDataSource.destroy();
         }
     }
 
     async getPodcastsByCategory(categoryId: number): Promise<Podcast[]> {
         await initializeDataSource();
 
-        const categoryRepository = AppDataSource.getRepository(Category);
+        const podcastRepository = AppDataSource.getRepository(Podcast);
+        const podcasts = await podcastRepository
+            .createQueryBuilder("podcast")
+            .innerJoinAndSelect("podcast.categories", "category", "category.id = :categoryId", { categoryId: categoryId })
+            .leftJoinAndSelect("podcast.categories", "allCategories")
+            .getMany();
 
-        const category = await categoryRepository.findOne({
-            where: { id: categoryId },
-            relations: ["podcasts"],
-        });
+        return podcasts;
+    }
 
-        if (!category) {
-            throw new Error("Category not found");
-        }
+    async getNrOfPodcasts(): Promise<number> {
+        await initializeDataSource();
 
-        return category.podcasts;
+        const podcastRepository = AppDataSource.getRepository(Podcast);
+        const nrOfPodcasts = await podcastRepository.count();
+
+        return nrOfPodcasts;
     }
 }
