@@ -86,8 +86,6 @@ async function getPodcasts(category) {
 function createPodcastElement(imgUrl, title, description, categories, nrOdEpisodes, link) {
     const podcastElement = document.createElement("div");
     podcastElement.className = "podcast-element card m-3";
-    podcastElement.style.width = "14rem";
-    podcastElement.style.height = "32rem";
 
     const img = document.createElement("img");
     img.className = "card-img-top";
