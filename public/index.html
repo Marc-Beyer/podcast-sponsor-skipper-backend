@@ -66,23 +66,25 @@
 
 
     <div id="main-content-container" class="d-flex justify-content-between m-auto">
-        <div id="podcasts-container" class="d-flex justify-content-evenly flex-wrap mt-3">
+        <div>
+            <div id="podcasts-container" class="d-flex justify-content-evenly flex-wrap mt-3">
+            </div>
+            <nav aria-label="..." class="m-auto" style="max-width: 1550px;">
+                <ul id="pagination" class="pagination m-3">
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
         <nav id="categories-container" class="nav nav-underline flex-column me-3" style="min-width: 16rem;">
             <a id="category-all" class="nav-link" href="index.html">All</a>
         </nav>
     </div>
 
-    <nav aria-label="..." class="m-auto" style="max-width: 1550px;">
-        <ul id="pagination" class="pagination m-3">
-            <li class="page-item disabled">
-                <span class="page-link">Previous</span>
-            </li>
-            <li class="page-item">
-                <a class="page-link" href="#">Next</a>
-            </li>
-        </ul>
-    </nav>
 </body>
 
 </html>

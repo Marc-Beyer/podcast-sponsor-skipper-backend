@@ -1,4 +1,5 @@
 import { NR_OF_RESULTS_PER_PAGE } from "../../constants.js";
+import { addPodcast } from "../../controller/podcast.controller.js";
 import { requestPodcast } from "../../podcastRequestManager.js";
 import { AppDataSource, initializeDataSource } from "../data-source.js";
 import { Category } from "../entities/category.entity.js";
@@ -26,6 +27,7 @@ export class PodcastService {
 
         try {
             await podcastRepository.save(podcast);
+            addPodcast();
             console.log("Podcast saved successfully");
 
             return podcast;

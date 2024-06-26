@@ -7,6 +7,11 @@ const podcastService = new PodcastService();
 let nrOfPages = 2;
 let nrOfPodcasts = 2;
 
+export const addPodcast = () => {
+    nrOfPodcasts++;
+    nrOfPages = Math.ceil(nrOfPodcasts / NR_OF_RESULTS_PER_PAGE);
+};
+
 export const getNrOfPodcasts = async () => {
     try {
         nrOfPodcasts = await podcastService.getNrOfPodcasts();
