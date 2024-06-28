@@ -4,6 +4,7 @@
 const paginationElement = document.getElementById("pagination");
 
 function createPagination(currentPage, nrOfPages) {
+    if (currentPage > nrOfPages) setPage("");
     paginationElement.innerHTML = "";
 
     if (currentPage >= 1) paginationElement.append(createPage(currentPage - 1, false, "Previous"));
@@ -38,9 +39,24 @@ function createPage(number, isActive, text = undefined) {
 
     const a = document.createElement("a");
     a.className = "page-link";
-    a.href = `?page=${number}`;
+    a.addEventListener("click", (e) => {
+        e.preventDefault();
+        setPage(number);
+    });
+
+    a.href = "#";
     a.textContent = text ? text : number + 1;
     li.append(a);
 
     return li;
+}
+
+function setPage(pageNr = "") {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (pageNr === "") {
+        urlParams.delete("page");
+    } else {
+        urlParams.set("page", pageNr);
+    }
+    window.location.search = urlParams;
 }

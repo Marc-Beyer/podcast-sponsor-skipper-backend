@@ -2,56 +2,27 @@
 "use strict";
 
 const podcastsContainer = document.getElementById("podcasts-container");
-const categoriesContainer = document.getElementById("categories-container");
 
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
+const lang = urlParams.get("lang");
+const search = urlParams.get("search");
 const category = urlParams.get("category");
 const page = urlParams.get("page");
-console.log(urlParams, category, page);
+console.log(urlParams, category, page, lang, search);
 
-(async function init() {
+(async () => {
     document
         .querySelector("html")
         .setAttribute("data-bs-theme", window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
 
-    await getPodcasts(category);
-    await getCategories(category);
+    await initLanguage(lang);
+    await initSearch(search);
+    await getPodcasts(category, lang);
+    await initCategories(category ?? "");
 })();
 
-async function getCategories(activeCategoryId) {
-    const response = await fetch("/api/v1/categories");
-
-    const categories = await response.json();
-    console.log(categories);
-
-    let activeCategoryElement;
-    for (const category of categories) {
-        const categoryElement = createCategoryElement(category.name, category.id);
-        categoriesContainer.append(categoryElement);
-        if (activeCategoryId === category.id + "") {
-            activeCategoryElement = categoryElement;
-            console.log("activeCategoryElement", activeCategoryElement);
-        }
-    }
-    if (category === null) {
-        activeCategoryElement = document.getElementById("category-all");
-    }
-    activeCategoryElement.classList.add("active");
-}
-
-function createCategoryElement(name, id) {
-    const categoryElement = document.createElement("a");
-
-    categoryElement.className = "nav-link";
-    categoryElement.textContent = name;
-    categoryElement.id = `category-${id}`;
-    categoryElement.href = `index.html?category=${id}`;
-
-    return categoryElement;
-}
-
-async function getPodcasts(category) {
+async function getPodcasts(category, lang) {
     let url = "/api/v1/podcasts";
     if (category) {
         url = `/api/v1/categories/${category}/podcasts`;
@@ -60,7 +31,14 @@ async function getPodcasts(category) {
     if (!Number.isNaN(parsedPage)) {
         url += `?page=${page}`;
     } else {
+        url += "?page=0";
         parsedPage = 0;
+    }
+    if (lang) {
+        url += `&lang=${lang}`;
+    }
+    if (search) {
+        url += `&search=${search}`;
     }
     const response = await fetch(url);
 

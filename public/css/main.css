@@ -59,6 +59,16 @@ button {
     max-width: 1550px;
 }
 
+.clearable-input {
+    position: relative;
+}
+.clearable-input .btn-close {
+    position: absolute;
+    top: 50%;
+    right: 0.5rem;
+    transform: translate(0, -50%);
+}
+
 @media (max-width: 768px) {
     #podcasts-container .podcast-element {
         width: 100%;
@@ -67,10 +77,5 @@ button {
 
     #main-content-container {
         flex-direction: column;
-    }
-
-    #categories-container {
-        text-align: center;
-        margin: 1rem;
     }
 }

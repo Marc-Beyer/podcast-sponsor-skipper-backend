@@ -1,5 +1,5 @@
+import { ILike } from "typeorm";
 import { NR_OF_RESULTS_PER_PAGE } from "../../constants.js";
-import { addPodcast } from "../../controller/podcast.controller.js";
 import { requestPodcast } from "../../podcastRequestManager.js";
 import { AppDataSource, initializeDataSource } from "../data-source.js";
 import { Category } from "../entities/category.entity.js";
@@ -27,7 +27,6 @@ export class PodcastService {
 
         try {
             await podcastRepository.save(podcast);
-            addPodcast();
             console.log("Podcast saved successfully");
 
             return podcast;
@@ -56,35 +55,60 @@ export class PodcastService {
         }
     }
 
-    async getAllPodcasts(page: number): Promise<Podcast[]> {
+    async getAllPodcasts(page: number, language: string, search: string): Promise<[Podcast[], number]> {
         await initializeDataSource();
 
         const podcastRepository = AppDataSource.getRepository(Podcast);
 
         try {
-            const podcasts = await podcastRepository.find({
+            return await podcastRepository.findAndCount({
                 relations: ["categories"],
                 take: NR_OF_RESULTS_PER_PAGE,
                 skip: page * NR_OF_RESULTS_PER_PAGE,
+                where: {
+                    language: ILike(`${language}%`),
+                    title: ILike(`%${search}%`),
+                },
             });
-            return podcasts;
         } catch (error) {
             console.error("Error retrieving podcasts:", error);
-            return [];
+            return [[], 0];
         }
     }
 
-    async getPodcastsByCategory(categoryId: number): Promise<Podcast[]> {
+    async getPodcastsByCategory(
+        categoryId: number | undefined,
+        page: number,
+        language: string | undefined,
+        search: string | undefined
+    ): Promise<[Podcast[], number]> {
         await initializeDataSource();
 
         const podcastRepository = AppDataSource.getRepository(Podcast);
-        const podcasts = await podcastRepository
-            .createQueryBuilder("podcast")
-            .innerJoinAndSelect("podcast.categories", "category", "category.id = :categoryId", { categoryId: categoryId })
-            .leftJoinAndSelect("podcast.categories", "allCategories")
-            .getMany();
 
-        return podcasts;
+        try {
+            const queryBuilder = podcastRepository.createQueryBuilder("podcast");
+            if (language) {
+                queryBuilder.andWhere("podcast.language LIKE :language", { language: `${language}%` });
+            }
+
+            if (search) {
+                queryBuilder.andWhere("podcast.title LIKE :search", { search: `%${search}%` });
+            }
+            if (categoryId) {
+                queryBuilder
+                    .innerJoinAndSelect("podcast.categories", "category", "category.id = :categoryId", { categoryId })
+                    .leftJoinAndSelect("podcast.categories", "allCategories");
+            } else {
+                queryBuilder.leftJoinAndSelect("podcast.categories", "allCategories");
+            }
+            queryBuilder.skip(page * NR_OF_RESULTS_PER_PAGE).take(NR_OF_RESULTS_PER_PAGE);
+
+            return await queryBuilder.getManyAndCount();
+        } catch (error) {
+            console.error("Error retrieving podcasts:", error);
+            return [[], 0];
+        }
     }
 
     async getNrOfPodcasts(): Promise<number> {

@@ -26,33 +26,12 @@ export async function requestPodcast(url: string): Promise<PodcastClass | undefi
         console.log("Parsed podcast:funding:", parsedResponse.rss.channel["podcast:funding"]);
         console.log("Parsed itunes:category:", parsedResponse.rss.channel["itunes:category"]);
 
-        /*
-            const podcastOld: Podcast = {
-                url: url,
-                title: channel.title,
-                description: channel.description,
-                link: channel.link,
-                language: channel.language,
-                category: parseXmlCategory(channel["itunes:category"]),
-                imageUrl: channel["itunes:image"]["@_href"],
-                explicit: channel["itunes:explicit"] != "no" && channel["itunes:explicit"] != "false",
-                locked: channel["podcast:locked"] == "yes" || channel["podcast:locked"] == "true",
-                complete: channel["itunes:complete"] == "yes" || channel["itunes:complete"] == "true",
-                lastUpdate: new Date(),
-                nrOdEpisodes: channel.item.length,
-                copyright: channel.copyright,
-                author: channel["itunes:author"],
-                fundingText: channel["podcast:funding"]?.["#text"],
-                fundingUrl: channel["podcast:funding"]?.["@_url"],
-            };
-            */
-
         const podcast = new PodcastClass();
         podcast.url = url;
         podcast.title = channel.title;
         podcast.description = channel.description;
         podcast.link = channel.link ?? url;
-        podcast.language = channel.language;
+        podcast.language = channel.language.toLowerCase() ?? "en";
         podcast.imageUrl = channel["itunes:image"]["@_href"];
         podcast.explicit = channel["itunes:explicit"] != "no" && channel["itunes:explicit"] != "false";
         podcast.locked = channel["podcast:locked"] == "yes" || channel["podcast:locked"] == "true";
