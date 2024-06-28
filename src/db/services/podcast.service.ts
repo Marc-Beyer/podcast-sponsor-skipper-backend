@@ -6,29 +6,36 @@ import { Category } from "../entities/category.entity.js";
 import { Podcast } from "../entities/podcast.entity.js";
 
 export class PodcastService {
-    async updatePodcast(podcastId: number) {
+    async updatePodcastById(podcastId: number) {
+        await initializeDataSource();
+
+        const podcastRepository = AppDataSource.getRepository(Podcast);
+
+        try {
+            const podcast = await podcastRepository.findOne({
+                where: { id: podcastId },
+                relations: ["categories"],
+            });
+            if (!podcast) return false;
+
+            return await this.updatePodcast(podcast);
+        } catch (error) {
+            console.error("Error retrieving podcast:", error);
+            return null;
+        }
+    }
+
+    async updatePodcast(podcast: Podcast) {
         await initializeDataSource();
 
         const podcastRepository = AppDataSource.getRepository(Podcast);
         const categoryRepository = AppDataSource.getRepository(Category);
 
         try {
-            let podcast = await podcastRepository.findOne({
-                where: { id: podcastId },
-                relations: ["categories"],
-            });
-            if (!podcast) return false;
-
             const [newPodcast, categories] = await requestPodcast(podcast.url);
             if (!newPodcast || !categories) return null;
 
-            console.log("Old Podcast", podcast);
-            podcast = { ...podcast, ...newPodcast, id: podcast.id };
-
-            console.log("Updated Podcast", podcast);
-
-            await podcastRepository.save(podcast);
-            console.log("Podcast updated successfully");
+            const updatedPodcast = { ...newPodcast, id: podcast.id };
 
             const updatedCategories = await Promise.all(
                 categories.map(async (name) => {
@@ -43,9 +50,34 @@ export class PodcastService {
             );
 
             // Update the categories of the podcast
-            podcast.categories = updatedCategories;
+            updatedPodcast.categories = updatedCategories;
 
-            return podcast;
+            await podcastRepository.save(updatedPodcast);
+            console.log("Podcast updated successfully");
+
+            return updatedPodcast;
+        } catch (error) {
+            console.error("Error retrieving podcast:", error);
+            return null;
+        }
+    }
+
+    async updateOldestPodcasts(nrOfPodcasts: number) {
+        await initializeDataSource();
+
+        const podcastRepository = AppDataSource.getRepository(Podcast);
+
+        try {
+            const podcasts = await podcastRepository.find({
+                order: { lastUpdate: { direction: "ASC" } },
+                relations: ["categories"],
+                take: nrOfPodcasts,
+            });
+            for (const podcast of podcasts) {
+                await this.updatePodcast(podcast);
+            }
+
+            return podcasts;
         } catch (error) {
             console.error("Error retrieving podcast:", error);
             return null;

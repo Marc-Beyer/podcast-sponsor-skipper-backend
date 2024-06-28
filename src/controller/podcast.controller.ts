@@ -77,7 +77,26 @@ export const updatePodcast = async (request: Request, response: Response) => {
     console.log(`[s]: podcastId ${podcastId}`);
 
     try {
-        const podcasts = await podcastService.updatePodcast(podcastId);
+        const podcasts = await podcastService.updatePodcastById(podcastId);
+        response.json(podcasts);
+    } catch (error) {
+        console.error("Error in getAllPodcasts controller:", error);
+        response.status(500).send((error as Error).message);
+    }
+};
+
+interface UpdatePodcastsRequest {
+    nr?: string;
+}
+
+export const updatePodcasts = async (request: Request, response: Response) => {
+    logRequest(request);
+
+    const queryParams: UpdatePodcastsRequest = request.query as unknown as UpdatePodcastsRequest;
+
+    const nr = parseInt(queryParams.nr ?? "1");
+    try {
+        const podcasts = await podcastService.updateOldestPodcasts(Number.isNaN(nr) ? 1 : nr);
         response.json(podcasts);
     } catch (error) {
         console.error("Error in getAllPodcasts controller:", error);
