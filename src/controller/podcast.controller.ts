@@ -7,7 +7,7 @@ const podcastService = new PodcastService();
 
 export const getPodcastsByCategory = async (request: Request, response: Response) => {
     logRequest(request);
-    const categoryId = parseInt(request.params.categoryId, 10);
+    const categoryId = parseInt(request.params.categoryId);
     console.log(`[s]: categoryId ${categoryId}`);
 
     const queryParams: GetPodcastsRequest = request.query as unknown as GetPodcastsRequest;
@@ -64,6 +64,20 @@ export const getPodcast = async (request: Request, response: Response) => {
 
     try {
         const podcasts = await podcastService.getPodcastByUrl(url);
+        response.json(podcasts);
+    } catch (error) {
+        console.error("Error in getAllPodcasts controller:", error);
+        response.status(500).send((error as Error).message);
+    }
+};
+
+export const updatePodcast = async (request: Request, response: Response) => {
+    logRequest(request);
+    const podcastId = parseInt(request.params.podcastId);
+    console.log(`[s]: podcastId ${podcastId}`);
+
+    try {
+        const podcasts = await podcastService.updatePodcast(podcastId);
         response.json(podcasts);
     } catch (error) {
         console.error("Error in getAllPodcasts controller:", error);

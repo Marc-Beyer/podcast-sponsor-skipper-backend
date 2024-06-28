@@ -6,6 +6,52 @@ import { Category } from "../entities/category.entity.js";
 import { Podcast } from "../entities/podcast.entity.js";
 
 export class PodcastService {
+    async updatePodcast(podcastId: number) {
+        await initializeDataSource();
+
+        const podcastRepository = AppDataSource.getRepository(Podcast);
+        const categoryRepository = AppDataSource.getRepository(Category);
+
+        try {
+            let podcast = await podcastRepository.findOne({
+                where: { id: podcastId },
+                relations: ["categories"],
+            });
+            if (!podcast) return false;
+
+            const [newPodcast, categories] = await requestPodcast(podcast.url);
+            if (!newPodcast || !categories) return null;
+
+            console.log("Old Podcast", podcast);
+            podcast = { ...podcast, ...newPodcast, id: podcast.id };
+
+            console.log("Updated Podcast", podcast);
+
+            await podcastRepository.save(podcast);
+            console.log("Podcast updated successfully");
+
+            const updatedCategories = await Promise.all(
+                categories.map(async (name) => {
+                    let category = await categoryRepository.findOne({ where: { name } });
+                    if (!category) {
+                        category = new Category();
+                        category.name = name;
+                        await categoryRepository.save(category);
+                    }
+                    return category;
+                })
+            );
+
+            // Update the categories of the podcast
+            podcast.categories = updatedCategories;
+
+            return podcast;
+        } catch (error) {
+            console.error("Error retrieving podcast:", error);
+            return null;
+        }
+    }
+
     async savePodcast(podcast: Podcast, categories: string[]) {
         await initializeDataSource();
 
@@ -35,7 +81,7 @@ export class PodcastService {
         }
     }
 
-    async getPodcastByUrl(url: string): Promise<Podcast | null> {
+    async getPodcastByUrl(url: string): Promise<Podcast | undefined> {
         await initializeDataSource();
 
         const podcastRepository = AppDataSource.getRepository(Podcast);
@@ -47,11 +93,14 @@ export class PodcastService {
             });
             if (podcast) return podcast;
 
-            const newPodcast = await requestPodcast(url);
-            return newPodcast ?? null;
+            const [newPodcast, categories] = await requestPodcast(url);
+            if (newPodcast && newPodcast) {
+                return await this.savePodcast(newPodcast, categories);
+            }
+            return undefined;
         } catch (error) {
             console.error("Error retrieving podcast:", error);
-            return null;
+            return undefined;
         }
     }
 

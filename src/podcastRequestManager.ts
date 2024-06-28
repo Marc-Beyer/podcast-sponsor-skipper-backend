@@ -8,7 +8,7 @@ const XMLParserOptions = {
     attributeNamePrefix: "@_",
 };
 
-export async function requestPodcast(url: string): Promise<PodcastClass | undefined> {
+export async function requestPodcast(url: string): Promise<[PodcastClass, string[]] | [undefined, undefined]> {
     try {
         const response = await fetch(url);
         const headerDate = response.headers && response.headers.get("date") ? response.headers.get("date") : "no response date";
@@ -16,15 +16,9 @@ export async function requestPodcast(url: string): Promise<PodcastClass | undefi
         console.log("Date in Response header:", headerDate);
 
         const responseText = await response.text();
-        console.log("Text:", responseText.substring(0, 700));
-
         const parser = new XMLParser(XMLParserOptions);
         const parsedResponse = parser.parse(responseText);
-        console.log("Parsed:", parsedResponse);
         const channel: XmlChannel = parsedResponse.rss.channel;
-        console.log("Parsed itunes:image:", parsedResponse.rss.channel["itunes:image"]);
-        console.log("Parsed podcast:funding:", parsedResponse.rss.channel["podcast:funding"]);
-        console.log("Parsed itunes:category:", parsedResponse.rss.channel["itunes:category"]);
 
         const podcast = new PodcastClass();
         podcast.url = url;
@@ -47,12 +41,10 @@ export async function requestPodcast(url: string): Promise<PodcastClass | undefi
 
         const categories = parseXmlCategory(channel["itunes:category"]);
 
-        const podcastService = new PodcastService();
-        const podcastClass = await podcastService.savePodcast(podcast, categories);
-        return podcastClass;
+        return [podcast, categories];
     } catch (err) {
         console.log((err as Error).message);
-        return undefined;
+        return [undefined, undefined];
     }
 }
 
