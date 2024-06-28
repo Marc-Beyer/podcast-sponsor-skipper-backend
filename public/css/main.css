@@ -62,11 +62,17 @@ button {
 .clearable-input {
     position: relative;
 }
+
 .clearable-input .btn-close {
     position: absolute;
     top: 50%;
     right: 0.5rem;
     transform: translate(0, -50%);
+}
+
+img.card-img-top {
+    aspect-ratio: 1;
+    background: gray;
 }
 
 @media (max-width: 768px) {
@@ -76,6 +82,6 @@ button {
     }
 
     #main-content-container {
-        flex-direction: column;
+        flex-direction: column-reverse;
     }
 }
