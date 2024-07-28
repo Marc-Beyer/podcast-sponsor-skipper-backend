@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity.js";
 
 @Entity()
@@ -23,6 +23,9 @@ export class SponsorSection {
 
     @Column({ default: 0 })
     downVotes!: number;
+
+    @CreateDateColumn()
+    createdAt!: Date;
 
     @ManyToOne(() => User, { onDelete: "CASCADE" })
     submittedBy!: User;
