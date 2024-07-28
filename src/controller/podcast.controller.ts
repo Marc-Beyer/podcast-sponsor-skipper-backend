@@ -23,7 +23,7 @@ export const getPodcastsByCategory = async (request: Request, response: Response
         response.json({ podcasts, nrOfPages: Math.ceil(count / NR_OF_RESULTS_PER_PAGE) });
     } catch (error) {
         console.error("Error in getPodcastsByCategory controller:", error);
-        response.status(500).send((error as Error).message);
+        response.status(500).send("Something went wrong");
     }
 };
 
@@ -48,7 +48,7 @@ export const getAllPodcasts = async (request: Request, response: Response) => {
         response.json({ podcasts, nrOfPages: Math.ceil(count / NR_OF_RESULTS_PER_PAGE) });
     } catch (error) {
         console.error("Error in getAllPodcasts controller:", error);
-        response.status(500).send((error as Error).message);
+        response.status(500).send("Something went wrong");
     }
 };
 
@@ -67,7 +67,7 @@ export const getPodcast = async (request: Request, response: Response) => {
         response.json(podcasts);
     } catch (error) {
         console.error("Error in getAllPodcasts controller:", error);
-        response.status(500).send((error as Error).message);
+        response.status(500).send("Something went wrong");
     }
 };
 
@@ -81,7 +81,7 @@ export const updatePodcast = async (request: Request, response: Response) => {
         response.json(podcasts);
     } catch (error) {
         console.error("Error in getAllPodcasts controller:", error);
-        response.status(500).send((error as Error).message);
+        response.status(500).send("Something went wrong");
     }
 };
 
@@ -100,6 +100,6 @@ export const updatePodcasts = async (request: Request, response: Response) => {
         response.json(podcasts);
     } catch (error) {
         console.error("Error in getAllPodcasts controller:", error);
-        response.status(500).send((error as Error).message);
+        response.status(500).send("Something went wrong");
     }
 };

@@ -1,17 +1,35 @@
 import { Request, Response } from "express";
 import { logRequest } from "../utils/logger.js";
 import { PodcastService } from "../db/services/podcast.service.js";
+import { UserService } from "../db/services/user.service.js";
+import { UserRole } from "../enums/UserRole.js";
+
+const userService = new UserService();
 
 export const scrapeRSSFeeds = async (request: Request, response: Response) => {
     logRequest(request);
 
-    console.log(request.body);
-    const url: string = request.body.url;
-    if (!url.startsWith("http")) {
-        response.status(400).send("Incorrect RSS Feed Url!");
-    }
-
     try {
+        const { url, username, token } = request.body;
+
+        if (!url.startsWith("http")) {
+            response.status(400).send("Incorrect RSS Feed Url!");
+        }
+
+        const user = await userService.getUserByUsername(username);
+        if (!user) {
+            return response.status(401).send("Invalid username or token");
+        }
+
+        const isTokenValid = await userService.validateUserToken(user, token);
+        if (!isTokenValid) {
+            return response.status(401).send("Invalid username or token");
+        }
+
+        if (user.role !== UserRole.ADMIN) {
+            return response.status(401).send("Unauthorized");
+        }
+
         const scrapeResponse = await fetch(url);
         const regexp = /"https:\/\/chartable\.com\/podcasts\/[^"]+"/gm;
         const textResponse = await scrapeResponse.text();
@@ -41,7 +59,7 @@ export const scrapeRSSFeeds = async (request: Request, response: Response) => {
          */
     } catch (error) {
         console.error("Error in scrapeRSSFeeds controller:", error);
-        response.status(500).send((error as Error).message);
+        response.status(500).send("Something went wrong");
     }
 };
 

@@ -11,6 +11,6 @@ export const getAllCategories = async (request: Request, response: Response) => 
         response.json(categories);
     } catch (error) {
         console.error("Error in getAllCategories controller:", error);
-        response.status(500).send((error as Error).message);
+        response.status(500).send("Something went wrong");
     }
 };
