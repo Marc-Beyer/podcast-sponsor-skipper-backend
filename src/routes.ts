@@ -2,7 +2,7 @@ import { Router } from "express";
 import { getAllCategories } from "./controller/category.controller.js";
 import { getAllPodcasts, getPodcast, getPodcastsByCategory, updatePodcast, updatePodcasts } from "./controller/podcast.controller.js";
 import { scrapeRSSFeeds } from "./controller/scrape.controller.js";
-import { addSponsorSection, getSponsorSectionsByUrl } from "./controller/sponsorSection.controller.js";
+import { addSponsorSection, getSponsorSectionsByUrl, rateSponsorSection } from "./controller/sponsorSection.controller.js";
 import { addUser } from "./controller/user.controller.js";
 
 const router = Router();
@@ -18,6 +18,8 @@ router.post("/scrape", scrapeRSSFeeds);
 
 router.post("/submit-sponsor-section", addSponsorSection);
 router.post("/get-sponsor-section", getSponsorSectionsByUrl);
+router.post("/rate-sponsor-section", rateSponsorSection);
+
 
 router.get("/register", addUser);
 

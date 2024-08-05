@@ -5,6 +5,8 @@ import { toNumberOrDefault } from "../helper.js";
 import { Category } from "./entities/category.entity.js";
 import { User } from "./entities/user.entity.js";
 import { SponsorSection } from "./entities/sponsorSection.entity.js";
+import { Duration } from "./entities/duration.entity.js";
+import { Rating } from "./entities/rating.entity.js";
 
 export const POSTGRES_DB = process.env.POSTGRES_DB ?? "podcastdb";
 export const POSTGRES_HOST = process.env.POSTGRES_HOST ?? "localhost";
@@ -23,7 +25,7 @@ export const AppDataSource = new DataSource({
     database: POSTGRES_DB,
     synchronize: true,
     logging: false,
-    entities: [Podcast, Category, User, SponsorSection],
+    entities: [Podcast, Category, User, SponsorSection, Duration, Rating],
     migrations: [],
     subscribers: [],
 });

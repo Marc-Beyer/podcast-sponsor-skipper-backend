@@ -1,28 +1,17 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity.js";
+import { SponsorSection } from "./sponsorSection.entity.js";
 
 @Entity()
-export class SponsorSection {
+export class Rating {
     @PrimaryGeneratedColumn()
     id!: number;
 
     @Column()
-    episodeUrl!: string;
+    isPositive!: boolean;
 
-    @Column()
-    podcastUrl!: string;
-
-    @Column()
-    startPosition!: number;
-
-    @Column()
-    endPosition!: number;
-
-    @Column({ default: 0 })
-    rating!: number;
-
-    @CreateDateColumn()
-    createdAt!: Date;
+    @ManyToOne(() => SponsorSection, { onDelete: "CASCADE" })
+    sponsorSection!: SponsorSection;
 
     @ManyToOne(() => User, { onDelete: "CASCADE" })
     submittedBy!: User;

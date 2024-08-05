@@ -38,4 +38,16 @@ export class SponsorSectionService {
             throw error;
         }
     }
+
+    async getSponsorSectionById(sponsorSectionId: number): Promise<SponsorSection | null> {
+        await initializeDataSource();
+
+        const sponsorSectionRepository = AppDataSource.getRepository(SponsorSection);
+        try {
+            return await sponsorSectionRepository.findOneBy({ id: sponsorSectionId });
+        } catch (error) {
+            console.error("Error fetching sponsor sections:", error);
+            throw error;
+        }
+    }
 }
