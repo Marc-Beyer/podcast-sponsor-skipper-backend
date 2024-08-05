@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { PodcastService } from "../db/services/podcast.service.js";
 import { logRequest } from "../utils/logger.js";
-import { NR_OF_RESULTS_PER_PAGE } from "../constants.js";
+import { Constants } from "../utils/constants.js";
 
 const podcastService = new PodcastService();
 
@@ -20,7 +20,7 @@ export const getPodcastsByCategory = async (request: Request, response: Response
             queryParams.lang,
             queryParams.search
         );
-        response.json({ podcasts, nrOfPages: Math.ceil(count / NR_OF_RESULTS_PER_PAGE) });
+        response.json({ podcasts, nrOfPages: Math.ceil(count / Constants.NR_OF_RESULTS_PER_PAGE) });
     } catch (error) {
         console.error("Error in getPodcastsByCategory controller:", error);
         response.status(500).send("Something went wrong");
@@ -45,7 +45,7 @@ export const getAllPodcasts = async (request: Request, response: Response) => {
             queryParams.lang ?? "",
             queryParams.search ?? ""
         );
-        response.json({ podcasts, nrOfPages: Math.ceil(count / NR_OF_RESULTS_PER_PAGE) });
+        response.json({ podcasts, nrOfPages: Math.ceil(count / Constants.NR_OF_RESULTS_PER_PAGE) });
     } catch (error) {
         console.error("Error in getAllPodcasts controller:", error);
         response.status(500).send("Something went wrong");

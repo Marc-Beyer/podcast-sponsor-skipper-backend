@@ -12,6 +12,9 @@ export class User {
     @Column({ unique: true })
     token!: string;
 
+    @Column({ default: 0 })
+    trustScore!: number;
+
     @Column({
         type: "int",
         enum: UserRole,

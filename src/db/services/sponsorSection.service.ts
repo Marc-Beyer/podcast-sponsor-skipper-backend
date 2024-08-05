@@ -32,7 +32,10 @@ export class SponsorSectionService {
 
         const sponsorSectionRepository = AppDataSource.getRepository(SponsorSection);
         try {
-            return await sponsorSectionRepository.findBy({ episodeUrl });
+            return await sponsorSectionRepository.find({
+                where: { episodeUrl },
+                relations: ["submittedBy", "duration"],
+            });
         } catch (error) {
             console.error("Error fetching sponsor sections:", error);
             throw error;

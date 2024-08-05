@@ -1,9 +1,9 @@
 import { ILike } from "typeorm";
-import { NR_OF_RESULTS_PER_PAGE } from "../../constants.js";
 import { requestPodcast } from "../../podcastRequestManager.js";
 import { AppDataSource, initializeDataSource } from "../data-source.js";
 import { Category } from "../entities/category.entity.js";
 import { Podcast } from "../entities/podcast.entity.js";
+import { Constants } from "../../utils/constants.js";
 
 export class PodcastService {
     async updatePodcastById(podcastId: number) {
@@ -144,8 +144,8 @@ export class PodcastService {
         try {
             return await podcastRepository.findAndCount({
                 relations: ["categories"],
-                take: NR_OF_RESULTS_PER_PAGE,
-                skip: page * NR_OF_RESULTS_PER_PAGE,
+                take: Constants.NR_OF_RESULTS_PER_PAGE,
+                skip: page * Constants.NR_OF_RESULTS_PER_PAGE,
                 where: {
                     language: ILike(`${language}%`),
                     title: ILike(`%${search}%`),
@@ -183,7 +183,7 @@ export class PodcastService {
             } else {
                 queryBuilder.leftJoinAndSelect("podcast.categories", "allCategories");
             }
-            queryBuilder.skip(page * NR_OF_RESULTS_PER_PAGE).take(NR_OF_RESULTS_PER_PAGE);
+            queryBuilder.skip(page * Constants.NR_OF_RESULTS_PER_PAGE).take(Constants.NR_OF_RESULTS_PER_PAGE);
 
             return await queryBuilder.getManyAndCount();
         } catch (error) {
