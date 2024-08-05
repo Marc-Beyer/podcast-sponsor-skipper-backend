@@ -16,35 +16,35 @@ export class RatingService {
         }
     }
 
-    async addRating(rating: Partial<Rating>): Promise<Rating | undefined> {
+    async addRating(rating: Partial<Rating>): Promise<SponsorSection> {
         await initializeDataSource();
 
         const ratingRepository = AppDataSource.getRepository(Rating);
         const sponsorSectionRepository = AppDataSource.getRepository(SponsorSection);
         try {
-            if (rating.sponsorSection === undefined) return undefined;
+            if (rating.sponsorSection === undefined) throw new Error("Missing sponsorSection");
             const sponsorSection = await sponsorSectionRepository.findOne({
                 where: { id: rating.sponsorSection.id },
             });
 
-            if (sponsorSection == null) return undefined;
+            if (sponsorSection == null) throw new Error("Cannot find sponsorSection");
 
             const newRating = ratingRepository.create(rating);
-            const savedRating = await ratingRepository.save(newRating);
-            const ratings = await ratingRepository.find({ where: { sponsorSection: sponsorSection } });
+            await ratingRepository.save(newRating);
+            console.log("newRating", newRating);
+
+            const ratings = await ratingRepository.find({ where: { sponsorSection: { id: sponsorSection.id } } });
+            console.log("ratings", ratings);
 
             const totalRating = ratings.reduce((accumulator, currentValue) => {
                 return accumulator + (currentValue.isPositive ? Constants.RATING_POSITIVE_FACTOR : Constants.RATING_NEGATIVE_FACTOR);
             }, 0);
 
             sponsorSection.rating = totalRating;
-            await sponsorSectionRepository.save(sponsorSection);
-
-            return savedRating;
+            return await sponsorSectionRepository.save(sponsorSection);
         } catch (error) {
             console.error("Error adding rating:", error);
             throw error;
         }
-        return undefined;
     }
 }

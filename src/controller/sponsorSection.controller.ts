@@ -68,19 +68,25 @@ export const rateSponsorSection = async (request: Request, response: Response) =
             return response.status(401).send("Invalid username or token");
         }
 
-        const sponsorSection = await sponsorSectionService.getSponsorSectionById(sponsorSectionId);
-
-        if (sponsorSection == null) {
+        if (sponsorSectionId === undefined) {
             return response.status(400).send("Invalid sponsorSectionId");
         }
 
-        const newRating = await ratingService.addRating({
+        const sponsorSection = await sponsorSectionService.getSponsorSectionById(sponsorSectionId);
+
+        if (sponsorSection === null) {
+            return response.status(400).send("Invalid sponsorSectionId");
+        }
+
+        const updatedSponsorSection = await ratingService.addRating({
             sponsorSection,
             isPositive,
             submittedBy: user,
         });
+        console.log(updatedSponsorSection);
+        console.log(updatedSponsorSection.rating);
 
-        response.status(201).json(sponsorSection.rating);
+        response.status(201).json(updatedSponsorSection.rating);
     } catch (error) {
         console.error("Error in addSponsorSection controller:", error);
         response.status(500).send("Something went wrong");

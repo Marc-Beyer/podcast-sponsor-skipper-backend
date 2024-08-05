@@ -19,7 +19,7 @@ export class SponsorSection {
     @Column()
     endPosition!: number;
 
-    @Column({ default: 0 })
+    @Column("float", { default: 0 })
     rating!: number;
 
     @CreateDateColumn()
