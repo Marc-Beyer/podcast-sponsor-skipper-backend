@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity.js";
+import { Duration } from "./duration.entity.js";
 
 @Entity()
 export class SponsorSection {
@@ -26,4 +27,7 @@ export class SponsorSection {
 
     @ManyToOne(() => User, { onDelete: "CASCADE" })
     submittedBy!: User;
+
+    @ManyToOne(() => Duration, { onDelete: "CASCADE" })
+    duration!: Duration;
 }

@@ -27,20 +27,25 @@ export const addSponsorSection = async (request: Request, response: Response) =>
             return response.status(401).send("Invalid username or token");
         }
 
-        const newSection = await sponsorSectionService.addSponsorSection({
-            episodeUrl,
-            podcastUrl,
-            startPosition,
-            endPosition,
-            submittedBy: user,
-        });
+        if (duration) {
+            const createdDuration = await durationService.addDuration({
+                episodeUrl: episodeUrl,
+                value: duration,
+            });
 
-        durationService.addDuration({
-            episodeUrl: episodeUrl,
-            value: duration,
-        });
+            const newSection = await sponsorSectionService.addSponsorSection({
+                episodeUrl,
+                podcastUrl,
+                startPosition,
+                endPosition,
+                submittedBy: user,
+                duration: createdDuration,
+            });
 
-        response.status(201).json(newSection.id);
+            response.status(201).json(newSection.id);
+        } else {
+            return response.status(400).send("Bad Request");
+        }
     } catch (error) {
         console.error("Error in addSponsorSection controller:", error);
         response.status(500).send("Something went wrong");
@@ -75,10 +80,7 @@ export const rateSponsorSection = async (request: Request, response: Response) =
             submittedBy: user,
         });
 
-        await sponsorSectionService.getSponsorSectionById(sponsorSectionId);
-
-
-        response.status(201).json(sponsorSection.id);
+        response.status(201).json(sponsorSection.rating);
     } catch (error) {
         console.error("Error in addSponsorSection controller:", error);
         response.status(500).send("Something went wrong");

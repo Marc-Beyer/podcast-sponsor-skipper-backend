@@ -19,8 +19,17 @@ export class DurationService {
 
         const durationRepository = AppDataSource.getRepository(Duration);
         try {
-            const newDuration = durationRepository.create(duration);
-            return await durationRepository.save(newDuration);
+            const existingDuration = await durationRepository.findOne({
+                where: { value: duration.value, episodeUrl: duration.episodeUrl },
+            });
+
+            if (existingDuration) {
+                existingDuration.occurrences += 1;
+                return await durationRepository.save(existingDuration);
+            } else {
+                const newDuration = durationRepository.create(duration);
+                return await durationRepository.save(newDuration);
+            }
         } catch (error) {
             console.error("Error adding sponsor section:", error);
             throw error;
