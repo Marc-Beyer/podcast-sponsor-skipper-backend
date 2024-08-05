@@ -81,13 +81,14 @@ export const rateSponsorSection = async (request: Request, response: Response) =
             return response.status(400).send("Invalid sponsorSectionId");
         }
 
-        const updatedSponsorSection = await ratingService.addRating({
-            sponsorSection,
-            isPositive,
-            submittedBy: user,
-        });
-        console.log(updatedSponsorSection);
-        console.log(updatedSponsorSection.rating);
+        const updatedSponsorSection = await ratingService.addRating(
+            {
+                sponsorSection,
+                isPositive,
+                submittedBy: user,
+            },
+            user
+        );
 
         response.status(201).json(updatedSponsorSection.rating);
     } catch (error) {
