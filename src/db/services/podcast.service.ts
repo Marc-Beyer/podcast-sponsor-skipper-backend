@@ -156,12 +156,14 @@ export class PodcastService {
             const queryBuilder = podcastRepository.createQueryBuilder("podcast").leftJoinAndSelect("podcast.categories", "category");
 
             if (isAdmin) {
-                queryBuilder.leftJoinAndMapMany(
-                    "podcast.sponsorSections",
-                    SponsorSection,
-                    "sponsorSection",
-                    "sponsorSection.podcastUrl = podcast.url"
-                );
+                queryBuilder
+                    .leftJoinAndMapMany(
+                        "podcast.sponsorSections",
+                        SponsorSection,
+                        "sponsorSection",
+                        "sponsorSection.podcastUrl = podcast.url"
+                    )
+                    .leftJoinAndMapOne("sponsorSection.submittedBy", "sponsorSection.submittedBy", "submittedBy");
             }
 
             const [podcasts, count] = await queryBuilder
@@ -171,6 +173,16 @@ export class PodcastService {
                 .take(Constants.NR_OF_RESULTS_PER_PAGE)
                 .skip(page * Constants.NR_OF_RESULTS_PER_PAGE)
                 .getManyAndCount();
+
+            if (isAdmin) {
+                (podcasts as (Podcast & { sponsorSections: SponsorSection[] })[]).forEach((podcast) => {
+                    podcast.sponsorSections.forEach((section) => {
+                        if (section.submittedBy) {
+                            delete (section.submittedBy as { token?: string }).token;
+                        }
+                    });
+                });
+            }
 
             return [podcasts, count];
         } catch (error) {

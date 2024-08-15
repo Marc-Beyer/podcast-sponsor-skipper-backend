@@ -172,6 +172,17 @@ function createSponsorSections(id, sponsorSections, username, token) {
         createdAtElement.textContent = `Created At: ${createdAtDate.toLocaleString()}`;
         sectionContainer.append(createdAtElement);
 
+        if (section.submittedBy) {
+            const submittedByElement = document.createElement("div");
+            submittedByElement.className = "submitted-by mt-2";
+            submittedByElement.innerHTML = `
+                <strong>Submitted By:</strong> ${section.submittedBy.username} <br>
+                <strong>Trust Score:</strong> ${section.submittedBy.trustScore} <br>
+                <strong>Role:</strong> ${section.submittedBy.role}
+            `;
+            sectionContainer.append(submittedByElement);
+        }
+
         sponsorSectionsContainer.append(sectionContainer);
     });
 
