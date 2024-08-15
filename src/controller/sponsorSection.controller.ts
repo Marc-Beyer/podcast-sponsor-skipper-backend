@@ -90,7 +90,7 @@ export const rateSponsorSection = async (request: Request, response: Response) =
             user
         );
 
-        response.status(201).json(updatedSponsorSection.rating);
+        response.status(201).json(updatedSponsorSection.id);
     } catch (error) {
         console.error("Error in addSponsorSection controller:", error);
         response.status(500).send("Something went wrong");

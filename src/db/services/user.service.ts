@@ -11,7 +11,25 @@ export class UserService {
 
         const userRepository = AppDataSource.getRepository(User);
         try {
-            return await userRepository.find();
+            return await userRepository
+                .createQueryBuilder("user")
+                .select([
+                    "user.id AS id",
+                    "user.username AS username",
+                    "user.trustScore AS trustScore",
+                    "user.role AS role",
+                    "user.createdAt AS createdAt",
+                ])
+                .addSelect((subQuery) => {
+                    return subQuery
+                        .select("COUNT(*)", "count")
+                        .from("sponsor_section", "sponsorSection")
+                        .where("sponsorSection.submittedById = user.id");
+                }, "nrOfSponsorSections")
+                .addSelect((subQuery) => {
+                    return subQuery.select("COUNT(*)", "count").from("rating", "rating").where("rating.submittedById = user.id");
+                }, "nrOfRatings")
+                .getRawMany();
         } catch (error) {
             console.error("Error fetching users:", error);
             throw error;
@@ -60,6 +78,18 @@ export class UserService {
             return await userRepository.findOneBy({ username });
         } catch (error) {
             console.error("Error fetching user:", error);
+            throw error;
+        }
+    }
+
+    async deleteUser(user: User) {
+        await initializeDataSource();
+
+        const userRepository = AppDataSource.getRepository(User);
+        try {
+            userRepository.delete({ id: user.id });
+        } catch (error) {
+            console.error("Error deleting user:", error);
             throw error;
         }
     }

@@ -50,9 +50,27 @@ button {
     }
 }
 
-#podcasts-container .podcast-element {
-    width: 14rem;
+#podcasts-container .podcast-element,
+#podcasts-container .podcast-element .podcast-element-main {
+    width: 16rem;
     height: 32rem;
+}
+
+.podcast-element-sponsor {
+    display: none;
+    overflow: auto;
+}
+
+#podcasts-container .podcast-element.expanded {
+    width: 32rem;
+}
+
+#podcasts-container .podcast-element.expanded .podcast-element-sponsor {
+    display: block;
+}
+
+.sponsor-section {
+    padding: 1rem;
 }
 
 #main-content-container {

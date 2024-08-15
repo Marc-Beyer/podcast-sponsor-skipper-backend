@@ -1,9 +1,10 @@
-import { ILike } from "typeorm";
+import { FindOptionsSelect, ILike } from "typeorm";
 import { requestPodcast } from "../../podcastRequestManager.js";
 import { AppDataSource, initializeDataSource } from "../data-source.js";
 import { Category } from "../entities/category.entity.js";
 import { Podcast } from "../entities/podcast.entity.js";
 import { Constants } from "../../utils/constants.js";
+import { SponsorSection } from "../entities/sponsorSection.entity.js";
 
 export class PodcastService {
     async updatePodcastById(podcastId: number) {
@@ -22,6 +23,16 @@ export class PodcastService {
         } catch (error) {
             console.error("Error retrieving podcast:", error);
             return null;
+        }
+    }
+
+    async rankPodcast(podcastId: number, ranking: number) {
+        const podcastRepository = AppDataSource.getRepository(Podcast);
+
+        const podcast = await podcastRepository.findOne({ where: { id: podcastId } });
+        if (podcast != null) {
+            podcast.ranking = ranking;
+            await podcastRepository.save(podcast);
         }
     }
 
@@ -136,21 +147,32 @@ export class PodcastService {
         }
     }
 
-    async getAllPodcasts(page: number, language: string, search: string): Promise<[Podcast[], number]> {
+    async getAllPodcasts(page: number, language: string, search: string, isAdmin: boolean): Promise<[Podcast[], number]> {
         await initializeDataSource();
 
         const podcastRepository = AppDataSource.getRepository(Podcast);
 
         try {
-            return await podcastRepository.findAndCount({
-                relations: ["categories"],
-                take: Constants.NR_OF_RESULTS_PER_PAGE,
-                skip: page * Constants.NR_OF_RESULTS_PER_PAGE,
-                where: {
-                    language: ILike(`${language}%`),
-                    title: ILike(`%${search}%`),
-                },
-            });
+            const queryBuilder = podcastRepository.createQueryBuilder("podcast").leftJoinAndSelect("podcast.categories", "category");
+
+            if (isAdmin) {
+                queryBuilder.leftJoinAndMapMany(
+                    "podcast.sponsorSections",
+                    SponsorSection,
+                    "sponsorSection",
+                    "sponsorSection.podcastUrl = podcast.url"
+                );
+            }
+
+            const [podcasts, count] = await queryBuilder
+                .where("podcast.language ILIKE :language", { language: `${language}%` })
+                .andWhere("podcast.title ILIKE :search", { search: `%${search}%` })
+                .orderBy("podcast.ranking", "DESC")
+                .take(Constants.NR_OF_RESULTS_PER_PAGE)
+                .skip(page * Constants.NR_OF_RESULTS_PER_PAGE)
+                .getManyAndCount();
+
+            return [podcasts, count];
         } catch (error) {
             console.error("Error retrieving podcasts:", error);
             return [[], 0];
@@ -183,6 +205,9 @@ export class PodcastService {
             } else {
                 queryBuilder.leftJoinAndSelect("podcast.categories", "allCategories");
             }
+
+            queryBuilder.orderBy("podcast.ranking", "DESC");
+
             queryBuilder.skip(page * Constants.NR_OF_RESULTS_PER_PAGE).take(Constants.NR_OF_RESULTS_PER_PAGE);
 
             return await queryBuilder.getManyAndCount();

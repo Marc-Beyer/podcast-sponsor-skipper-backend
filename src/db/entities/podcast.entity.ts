@@ -51,6 +51,9 @@ export class Podcast {
     @Column({ nullable: true })
     fundingUrl?: string;
 
+    @Column({ default: 0 })
+    ranking!: number;
+
     @ManyToMany(() => Category, (category) => category.podcasts, { cascade: true })
     @JoinTable()
     categories!: Category[];

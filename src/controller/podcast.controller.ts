@@ -2,8 +2,11 @@ import { Request, Response } from "express";
 import { PodcastService } from "../db/services/podcast.service.js";
 import { logRequest } from "../utils/logger.js";
 import { Constants } from "../utils/constants.js";
+import { UserRole } from "../enums/UserRole.js";
+import { UserService } from "../db/services/user.service.js";
 
 const podcastService = new PodcastService();
+const userService = new UserService();
 
 export const getPodcastsByCategory = async (request: Request, response: Response) => {
     logRequest(request);
@@ -36,6 +39,8 @@ interface GetPodcastsRequest {
 export const getAllPodcasts = async (request: Request, response: Response) => {
     logRequest(request);
     const queryParams: GetPodcastsRequest = request.query as unknown as GetPodcastsRequest;
+    const [a, username, token] = request.headers.authorization?.split(" ") ?? [undefined, undefined, undefined];
+    const isAdmin = await checkIfAdmin(username, token);
 
     const page = parseInt(queryParams.page ?? "0");
 
@@ -43,7 +48,8 @@ export const getAllPodcasts = async (request: Request, response: Response) => {
         const [podcasts, count] = await podcastService.getAllPodcasts(
             Number.isNaN(page) ? 0 : page,
             queryParams.lang ?? "",
-            queryParams.search ?? ""
+            queryParams.search ?? "",
+            isAdmin
         );
         response.json({ podcasts, nrOfPages: Math.ceil(count / Constants.NR_OF_RESULTS_PER_PAGE) });
     } catch (error) {
@@ -63,8 +69,8 @@ export const getPodcast = async (request: Request, response: Response) => {
     }
 
     try {
-        const podcasts = await podcastService.getPodcastByUrl(url);
-        response.json(podcasts);
+        const podcast = await podcastService.getPodcastByUrl(url);
+        response.json(podcast);
     } catch (error) {
         console.error("Error in getAllPodcasts controller:", error);
         response.status(500).send("Something went wrong");
@@ -79,6 +85,36 @@ export const updatePodcast = async (request: Request, response: Response) => {
     try {
         const podcasts = await podcastService.updatePodcastById(podcastId);
         response.json(podcasts);
+    } catch (error) {
+        console.error("Error in getAllPodcasts controller:", error);
+        response.status(500).send("Something went wrong");
+    }
+};
+
+export const rankPodcast = async (request: Request, response: Response) => {
+    logRequest(request);
+    const podcastId = parseInt(request.params.podcastId);
+    console.log(`[s]: podcastId ${podcastId}`);
+
+    const { ranking, username, token } = request.body;
+
+    try {
+        const user = await userService.getUserByUsername(username);
+        if (!user) {
+            return response.status(401).send("Invalid username or token");
+        }
+
+        const isTokenValid = await userService.validateUserToken(user, token);
+        if (!isTokenValid) {
+            return response.status(401).send("Invalid username or token");
+        }
+
+        if (user.role === UserRole.ADMIN) {
+            podcastService.rankPodcast(podcastId, ranking);
+            return response.status(200).send("Podcast ranking updated successfully");
+        } else {
+            return response.status(403).send("Unauthorized: Only admins can update podcast rankings");
+        }
     } catch (error) {
         console.error("Error in getAllPodcasts controller:", error);
         response.status(500).send("Something went wrong");
@@ -102,4 +138,20 @@ export const updatePodcasts = async (request: Request, response: Response) => {
         console.error("Error in getAllPodcasts controller:", error);
         response.status(500).send("Something went wrong");
     }
+};
+
+const checkIfAdmin = async (username: string | undefined | null, token: string | undefined | null) => {
+    if (!username || !token) return false;
+
+    const user = await userService.getUserByUsername(username);
+    if (!user) {
+        return false;
+    }
+
+    const isTokenValid = await userService.validateUserToken(user, token);
+    if (!isTokenValid) {
+        return false;
+    }
+
+    return user.role === UserRole.ADMIN;
 };
