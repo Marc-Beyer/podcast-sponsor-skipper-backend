@@ -167,6 +167,10 @@ function createSponsorSections(id, sponsorSections, username, token) {
         positionsElement.textContent = `Start: ${section.startPosition}, End: ${section.endPosition}`;
         sectionContainer.append(positionsElement);
 
+        const ratingElement = document.createElement("div");
+        ratingElement.textContent = `Rating: ${section.rating}`;
+        sectionContainer.append(ratingElement);
+
         const createdAtElement = document.createElement("div");
         const createdAtDate = new Date(section.createdAt);
         createdAtElement.textContent = `Created At: ${createdAtDate.toLocaleString()}`;

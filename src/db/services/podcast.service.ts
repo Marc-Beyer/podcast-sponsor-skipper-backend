@@ -163,7 +163,8 @@ export class PodcastService {
                         "sponsorSection",
                         "sponsorSection.podcastUrl = podcast.url"
                     )
-                    .leftJoinAndMapOne("sponsorSection.submittedBy", "sponsorSection.submittedBy", "submittedBy");
+                    .leftJoinAndMapOne("sponsorSection.submittedBy", "sponsorSection.submittedBy", "submittedBy")
+                    .leftJoinAndMapOne("sponsorSection.duration", "sponsorSection.duration", "duration");
             }
 
             const [podcasts, count] = await queryBuilder

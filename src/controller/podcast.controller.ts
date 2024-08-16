@@ -70,9 +70,14 @@ export const getPodcast = async (request: Request, response: Response) => {
 
     try {
         const podcast = await podcastService.getPodcastByUrl(url);
+
+        if (podcast) {
+            podcastService.rankPodcast(podcast?.id, podcast?.ranking + 1);
+        }
+
         response.json(podcast);
     } catch (error) {
-        console.error("Error in getAllPodcasts controller:", error);
+        console.error("Error in getPodcast controller:", error);
         response.status(500).send("Something went wrong");
     }
 };
