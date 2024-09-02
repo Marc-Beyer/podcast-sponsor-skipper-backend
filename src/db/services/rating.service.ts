@@ -58,6 +58,7 @@ export class RatingService {
 
             if (totalRating === 0) {
                 totalRating = ratings.reduce((accumulator, currentValue) => {
+                    if (currentValue.submittedBy.role === UserRole.BANNED) return accumulator;
                     return accumulator + (currentValue.isPositive ? Constants.RATING_POSITIVE_FACTOR : Constants.RATING_NEGATIVE_FACTOR);
                 }, 0);
             }
