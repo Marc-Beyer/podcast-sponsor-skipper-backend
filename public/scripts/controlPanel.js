@@ -88,7 +88,7 @@ function showResponse(response) {
 
         const trustScore = document.createElement("p");
         trustScore.classList.add("card-text");
-        trustScore.textContent = `Trust Score: ${user.trustScore}`;
+        trustScore.textContent = `Trust Score: ${user.trustscore}`;
 
         const role = document.createElement("p");
         role.classList.add("card-text");
@@ -96,7 +96,7 @@ function showResponse(response) {
 
         const createdAt = document.createElement("p");
         createdAt.classList.add("card-text", "text-muted");
-        createdAt.textContent = `Created At: ${new Date(user.createdAt).toLocaleString()}`;
+        createdAt.textContent = `Created At: ${new Date(user.createdat).toLocaleString()}`;
 
         const nrOfSponsorSections = document.createElement("p");
         nrOfSponsorSections.classList.add("card-text", "text-muted");
