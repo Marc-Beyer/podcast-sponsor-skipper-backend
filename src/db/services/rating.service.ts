@@ -11,7 +11,10 @@ export class RatingService {
 
         const ratingRepository = AppDataSource.getRepository(Rating);
         try {
-            return await ratingRepository.find({ where: { sponsorSection: sponsorSection } });
+            return await ratingRepository.find({
+                where: { sponsorSection: { id: sponsorSection.id } },
+                relations: ["submittedBy"],
+            });
         } catch (error) {
             console.error("Error fetching ratings:", error);
             throw error;
@@ -45,7 +48,7 @@ export class RatingService {
             const newRating = ratingRepository.create(rating);
             await ratingRepository.save(newRating);
 
-            const ratings = await ratingRepository.find({ where: { sponsorSection: { id: sponsorSection.id } } });
+            const ratings = await this.getAllRatings(sponsorSection);
 
             let totalRating = 0;
 
@@ -58,7 +61,7 @@ export class RatingService {
 
             if (totalRating === 0) {
                 totalRating = ratings.reduce((accumulator, currentValue) => {
-                    if (currentValue.submittedBy.role === UserRole.BANNED) return accumulator;
+                    if (currentValue.submittedBy?.role === UserRole.BANNED) return accumulator;
                     return accumulator + (currentValue.isPositive ? Constants.RATING_POSITIVE_FACTOR : Constants.RATING_NEGATIVE_FACTOR);
                 }, 0);
             }

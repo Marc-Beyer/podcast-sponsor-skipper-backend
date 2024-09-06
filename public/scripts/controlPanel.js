@@ -106,7 +106,34 @@ function showResponse(response) {
         nrOfRatings.classList.add("card-text", "text-muted");
         nrOfRatings.textContent = `Nr of submitted Ratings: ${user.nrOfRatings}`;
 
-        cardBody.append(username, id, trustScore, role, createdAt, nrOfSponsorSections, nrOfRatings);
+        const updateTrustScoreBtn = document.createElement("button");
+        updateTrustScoreBtn.classList.add("btn", "btn-secondary");
+        updateTrustScoreBtn.textContent = `Update Trust Score`;
+        updateTrustScoreBtn.addEventListener("click", async () => {
+            trustScore.textContent = `Trust Score: Calculating....`;
+
+            const response = await fetch("/api/v1/updateTrustScore", {
+                method: "POST",
+                headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    username: sessionStorage.getItem("username"),
+                    token: sessionStorage.getItem("token"),
+                    targetUsername: user.username,
+                }),
+            });
+
+            if (response.ok) {
+                const jsonResponse = await response.json();
+                trustScore.textContent = `Trust Score: ${jsonResponse.trustScore}`;
+            } else {
+                trustScore.textContent = `Trust Score: Could not be update!`;
+            }
+        });
+
+        cardBody.append(username, id, trustScore, role, createdAt, nrOfSponsorSections, nrOfRatings, updateTrustScoreBtn);
         userCard.append(cardBody);
         responseBox.append(userCard);
     }

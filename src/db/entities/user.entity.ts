@@ -12,7 +12,7 @@ export class User {
     @Column({ unique: true })
     token!: string;
 
-    @Column({ default: 0 })
+    @Column("float", { default: 0 })
     trustScore!: number;
 
     @Column({

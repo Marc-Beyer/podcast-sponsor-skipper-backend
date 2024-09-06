@@ -103,6 +103,18 @@ export class UserService {
         }
     }
 
+    async updateUser(user: User) {
+        await initializeDataSource();
+
+        const userRepository = AppDataSource.getRepository(User);
+        try {
+            userRepository.save(user);
+        } catch (error) {
+            console.error("Error updating user:", error);
+            throw error;
+        }
+    }
+
     private async generateUniqueUsername(): Promise<string> {
         const userRepository = AppDataSource.getRepository(User);
         let username: string;
