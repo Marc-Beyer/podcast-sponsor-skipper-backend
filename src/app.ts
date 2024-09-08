@@ -28,6 +28,7 @@ app.get("/", (req, res) => {
 
 app.use(apiPath, router);
 
+// Start a proxy to fetch the RSS feed in the browser with CORS headers
 app.get("/proxy", (req: Request, res: Response) => {
     const { url } = req.query;
 

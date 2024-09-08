@@ -102,26 +102,32 @@ export const getSponsorSectionsByUrl = async (request: Request, response: Respon
 
     const { episodeUrl, duration, username, token } = request.body;
 
+    console.log(episodeUrl, duration, username, token);
+
     try {
         if (episodeUrl === undefined || duration === undefined) {
             return response.status(400).send("Bad request");
         }
 
-        if (username !== null && token !== null) {
-            const user = await userService.getUserByUsername(username);
-            if (user !== null) {
-                const isTokenValid = await userService.validateUserToken(user, token);
-                if (isTokenValid) {
-                    const sponsorSections = await sponsorSectionService.getSponsorSectionsByUrl(episodeUrl);
+        try {
+            if (username && token) {
+                const user = await userService.getUserByUsername(username);
+                if (user !== null) {
+                    const isTokenValid = await userService.validateUserToken(user, token);
+                    if (isTokenValid) {
+                        const sponsorSections = await sponsorSectionService.getSponsorSectionsByUrl(episodeUrl);
 
-                    return response.json(
-                        sponsorSections.map((sponsorSection) => {
-                            sponsorSection.submittedBy.token = "";
-                            return sponsorSection;
-                        })
-                    );
+                        return response.json(
+                            sponsorSections.map((sponsorSection) => {
+                                sponsorSection.submittedBy.token = "";
+                                return sponsorSection;
+                            })
+                        );
+                    }
                 }
             }
+        } catch (e) {
+            //console.log("");
         }
 
         const sponsorSections = await sponsorSectionService.getSponsorSectionsByUrl(episodeUrl);
