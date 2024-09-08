@@ -1,6 +1,6 @@
 import "dotenv/config";
 import "reflect-metadata";
-import express, { Application } from "express";
+import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -27,6 +27,36 @@ app.get("/", (req, res) => {
 });
 
 app.use(apiPath, router);
+
+app.get("/proxy", (req: Request, res: Response) => {
+    const { url } = req.query;
+
+    if (!url || typeof url !== "string") {
+        res.status(400).send("URL is required");
+        return;
+    }
+
+    fetch(url)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`Failed to fetch the RSS feed. Status code: ${response.status}`);
+            }
+
+            res.set("Content-Type", response.headers.get("content-type") || "text/xml");
+
+            response
+                .text()
+                .then((data: string) => {
+                    res.send(data);
+                })
+                .catch(() => {
+                    res.status(500).send("Failed to fetch RSS feed");
+                });
+        })
+        .catch(() => {
+            res.status(500).send("Failed to fetch RSS feed");
+        });
+});
 
 // Init database
 await createDatabase(POSTGRES_DB, {

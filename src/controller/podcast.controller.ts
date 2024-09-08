@@ -58,6 +58,24 @@ export const getAllPodcasts = async (request: Request, response: Response) => {
     }
 };
 
+export const getPodcastById = async (request: Request, response: Response) => {
+    logRequest(request);
+
+    try {
+        const podcastId = parseInt(request.params.podcastId);
+        const podcast = await podcastService.getPodcastById(podcastId);
+
+        if (podcast === false) {
+            response.status(400).send("No podcast with the given id");
+        } else {
+            response.json(podcast);
+        }
+    } catch (error) {
+        console.error("Error in getPodcast controller:", error);
+        response.status(500).send("Something went wrong");
+    }
+};
+
 export const getPodcast = async (request: Request, response: Response) => {
     logRequest(request);
 

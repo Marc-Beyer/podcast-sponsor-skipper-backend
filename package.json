@@ -10,6 +10,7 @@
         "build": "npm run build-ts && npm run build-public",
         "start": "node ./dist/js/app.js",
         "clean-start": "npm run build && npm run start",
+        "clean-web-start": "npm run build-public && npm run start",
         "test": "tsc --noEmit && node --loader tsx ./test/runTests.ts",
         "lint": "eslint **/*.ts",
         "lint-fix": "eslint . --fix"

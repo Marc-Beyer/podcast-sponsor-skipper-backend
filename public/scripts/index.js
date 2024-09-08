@@ -79,18 +79,21 @@ function createPodcastElement(id, imgUrl, title, description, categories, nrOdEp
     const podcastMainElement = document.createElement("div");
     podcastMainElement.className = "podcast-element-main card";
 
+    const imgLink = document.createElement("a");
+    imgLink.href = `/podcast.html?id=${id}`;
     const img = document.createElement("img");
     img.className = "card-img-top";
     img.src = imgUrl;
     img.loading = "lazy";
     img.alt = "logo";
-    podcastMainElement.append(img);
+    imgLink.append(img);
+    podcastMainElement.append(imgLink);
 
     const info = document.createElement("div");
     info.className = "card-body d-flex flex-column overflow-hidden";
 
     const titleLink = document.createElement("a");
-    titleLink.href = link;
+    titleLink.href = `/podcast.html?id=${id}`;
 
     const cardTitle = document.createElement("h5");
     cardTitle.className = "card-title";

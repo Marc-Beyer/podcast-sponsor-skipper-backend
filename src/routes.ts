@@ -3,6 +3,7 @@ import { getAllCategories } from "./controller/category.controller.js";
 import {
     getAllPodcasts,
     getPodcast,
+    getPodcastById,
     getPodcastsByCategory,
     rankPodcast,
     updatePodcast,
@@ -21,6 +22,7 @@ router.get("/podcasts/update", updatePodcasts);
 router.get("/podcast/:podcastId/update", updatePodcast);
 router.post("/podcast/:podcastId/rank", rankPodcast);
 
+router.get("/podcast/:podcastId", getPodcastById);
 router.post("/podcast", getPodcast);
 router.post("/scrape", scrapeRSSFeeds);
 

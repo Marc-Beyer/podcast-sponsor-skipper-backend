@@ -1,4 +1,3 @@
-import { FindOptionsSelect, ILike } from "typeorm";
 import { requestPodcast } from "../../podcastRequestManager.js";
 import { AppDataSource, initializeDataSource } from "../data-source.js";
 import { Category } from "../entities/category.entity.js";
@@ -20,6 +19,29 @@ export class PodcastService {
             if (!podcast) return false;
 
             return await this.updatePodcast(podcast);
+        } catch (error) {
+            console.error("Error retrieving podcast:", error);
+            return null;
+        }
+    }
+
+    async getPodcastById(podcastId: number) {
+        await initializeDataSource();
+
+        const podcastRepository = AppDataSource.getRepository(Podcast);
+
+        try {
+            const podcast = await podcastRepository.findOne({
+                where: { id: podcastId },
+                relations: ["categories"],
+            });
+            if (!podcast) return false;
+
+            const sevenDaysAgo = new Date();
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+            if (podcast.lastUpdate < sevenDaysAgo) return await this.updatePodcast(podcast);
+            return podcast;
         } catch (error) {
             console.error("Error retrieving podcast:", error);
             return null;

@@ -100,11 +100,28 @@ export const rateSponsorSection = async (request: Request, response: Response) =
 export const getSponsorSectionsByUrl = async (request: Request, response: Response) => {
     logRequest(request);
 
-    const { episodeUrl, duration } = request.body;
+    const { episodeUrl, duration, username, token } = request.body;
 
     try {
         if (episodeUrl === undefined || duration === undefined) {
             return response.status(400).send("Bad request");
+        }
+
+        if (username !== null && token !== null) {
+            const user = await userService.getUserByUsername(username);
+            if (user !== null) {
+                const isTokenValid = await userService.validateUserToken(user, token);
+                if (isTokenValid) {
+                    const sponsorSections = await sponsorSectionService.getSponsorSectionsByUrl(episodeUrl);
+
+                    return response.json(
+                        sponsorSections.map((sponsorSection) => {
+                            sponsorSection.submittedBy.token = "";
+                            return sponsorSection;
+                        })
+                    );
+                }
+            }
         }
 
         const sponsorSections = await sponsorSectionService.getSponsorSectionsByUrl(episodeUrl);
