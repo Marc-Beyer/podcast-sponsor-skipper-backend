@@ -4,7 +4,7 @@
 
 This project is the backend for the Podcast App - Sponsor Skipper.
 
-Podcast App - Sponsor Skipper is designed to enhance your podcast listening experience by allowing you to skip
+**Podcast App - Sponsor Skipper** is an Android App, designed to enhance your podcast listening experience by allowing you to skip
 over sponsor segments effortlessly. With community-driven contributions, you can enjoy uninterrupted
 content, making your podcast time more enjoyable.
 
