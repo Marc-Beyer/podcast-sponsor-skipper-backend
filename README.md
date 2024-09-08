@@ -22,13 +22,14 @@ The backend also serves a website where users can search, add and listen to podc
     2. [Setup the Project](#setup-the-project)
     3. [Start the Backend](#start-the-backend)
     4. [Manage Users and Data](#manage-users-and-data)
+    5. [Build and Deploy the Project](#build-and-deploy-the-project)
 3. [Project Overview](#project-overview)
 
 # Screenshots
 
 <p align="center">
-    <img src="docs/imgs/screenshot-mainpage.png" width="350">
-    <img src="docs/imgs/screenshot-podcastpage.png" width="350">
+    <img src="docs/imgs/screenshot-mainpage.png" width="315">
+    <img src="docs/imgs/screenshot-podcastpage.png" width="315">
 </p>
 
 # Getting Started
@@ -140,6 +141,87 @@ Replace `<id>` with te id of the user you want to update and `<role_nr>` with th
 -   BANNED = 1
 -   MODERATOR = 2
 -   ADMIN = 3
+
+## Build and Deploy the Project
+
+To build the project run:
+
+```
+npm run dist
+```
+
+This will build and packaged the project in the `dist/` directory.
+
+You can now deploy this directory on you server. To install all dependencies navigate into this directory and run:
+
+```
+npm install
+```
+
+You can start the backend with:
+
+```
+npm run start
+```
+
+Alternatively, you can setup docker to run the backend.
+
+1. Crate a `docker-compose.yml` file at the same level as the `dist/` directory:
+
+```
+root
+|-- dist/
+|-- docker-compose.yml
+```
+
+2. Your `docker-compose.yml` could look like this:
+
+```
+version: '3.6'
+services:
+  node-server:
+    restart: always
+    image: node:20
+    working_dir: /usr/src/app
+    command: ["sh", "-c", "npm install && npm start"]
+    ports:
+        - 8001:80
+    volumes:
+        - ./dist:/usr/src/app
+    environment:
+      PORT: 80
+      POSTGRES_DB: podcastdb
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: podcastdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+
+```
+
+3. Start the docker services with:
+
+```
+docker compose up -d
+```
+
+4. You can stop the services with:
+
+```
+docker compose down
+```
 
 # Project Overview
 
