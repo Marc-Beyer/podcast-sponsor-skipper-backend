@@ -12,10 +12,6 @@ const page = urlParams.get("page");
 console.log(urlParams, category, page, lang, search);
 
 (async () => {
-    document
-        .querySelector("html")
-        .setAttribute("data-bs-theme", window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-
     await initLanguage(lang);
     await initSearch(search);
     await getPodcasts(category, lang);

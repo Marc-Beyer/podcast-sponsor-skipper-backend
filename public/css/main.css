@@ -98,6 +98,14 @@ img.card-img-top {
     background: gray;
 }
 
+html[data-bs-theme="dark"] .color-scheme-light {
+    display: none;
+}
+
+html[data-bs-theme="light"] .color-scheme-dark {
+    display: none;
+}
+
 @media (max-width: 768px) {
     #podcasts-container .podcast-element {
         width: 100%;

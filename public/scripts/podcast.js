@@ -363,6 +363,7 @@ function displayEpisodes(episodes) {
 }
 
 function showResult(podcast) {
+    document.title = `Podcast App - Sponsor Skipper | ${podcast.title}`;
     document.getElementById("main-title").textContent = podcast.title;
 
     document.getElementById("nr-of-episodes").textContent = `${podcast.nrOdEpisodes} episodes`;
