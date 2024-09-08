@@ -292,7 +292,17 @@ function displayEpisodes(episodes) {
 
     episodes.forEach((episode) => {
         const episodeContainer = document.createElement("div");
-        episodeContainer.classList.add("episode", "mb-4", "p-3", "border", "rounded", "d-flex", "flex-row", "align-items-center");
+        episodeContainer.classList.add(
+            "episode",
+            "mb-4",
+            "p-3",
+            "border",
+            "rounded",
+            "d-flex",
+            "flex-column",
+            "flex-sm-row",
+            "align-items-center"
+        );
 
         const imageContainer = document.createElement("div");
         imageContainer.style.width = "20%";

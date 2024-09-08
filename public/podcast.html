@@ -37,7 +37,7 @@
 
     <div id="main-content-container" class="d-flex flex-column m-auto">
         <div>
-            <div class="d-flex flex-row align-items-center m-3">
+            <div class="d-flex flex-column flex-sm-row align-items-center m-3">
                 <div style=" width: 33%;">
                     <img id="artwork" class="card-img-top" src="" loading="lazy" alt="logo">
                 </div>
@@ -63,7 +63,11 @@
         <div id="episodes-container" class="m-3"></div>
     </div>
 
-    <div id="audio-player" style="position: fixed; bottom: 0; display: none;" class="w-100 p-3 card ">
+    <div id="audio-player" style="position: fixed; bottom: 0; display: none;" class="w-100 px-3 pb-3 card ">
+        <button id="show-sponsor-sections" class="btn btn-link">
+            <span id="show-sponsor-sections-text">show</span> <span id="sponsor-sections-nr">0</span> sponsor
+            segments
+        </button>
         <div id="sponsor-sections-container" style="display: none;">
 
         </div>
@@ -72,10 +76,6 @@
                 <img id="audio-artwork" class="card-img-top" src="" loading="lazy" alt="artwork" width="64" height="64">
             </div>
             <div style="flex: 1;" class="ps-3">
-                <button id="show-sponsor-sections" class="position-absolute top-0 end-0 pt-1 pe-2 btn btn-link">
-                    <span id="show-sponsor-sections-text">show</span> <span id="sponsor-sections-nr">0</span> sponsor
-                    segments
-                </button>
                 <h5 id="episode-title">Episode Title</h5>
                 <audio id="audio" controls autoplay class="w-100">
                     <source id="audio-source">

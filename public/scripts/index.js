@@ -74,12 +74,13 @@ async function getPodcasts(category, lang) {
 
 function createPodcastElement(id, imgUrl, title, description, categories, nrOdEpisodes, link, ranking, sponsorSections, username, token) {
     const podcastElement = document.createElement("div");
-    podcastElement.className = "podcast-element card m-3 d-flex flex-row";
+    podcastElement.className = "podcast-element card m-3 d-flex flex-row justify-content-center";
 
     const podcastMainElement = document.createElement("div");
     podcastMainElement.className = "podcast-element-main card";
 
     const imgLink = document.createElement("a");
+    imgLink.classList.add("d-flex", "justify-content-center");
     imgLink.href = `/podcast.html?id=${id}`;
     const img = document.createElement("img");
     img.className = "card-img-top";
